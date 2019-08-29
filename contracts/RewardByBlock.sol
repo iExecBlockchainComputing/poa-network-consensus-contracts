@@ -1,10 +1,121 @@
 pragma solidity ^0.4.24;
 
-import "./interfaces/IRewardByBlock.sol";
-import "./interfaces/IKeysManager.sol";
-import "./interfaces/IProxyStorage.sol";
-import "./eternal-storage/EternalStorage.sol";
-import "./libs/SafeMath.sol";
+interface IRewardByBlock {
+    // Produce rewards for the given benefactors, with corresponding reward codes.
+    // Only callable by `SYSTEM_ADDRESS`
+    function reward(address[], uint16[]) external returns (address[], uint256[]);
+}
+interface IKeysManager {
+    function addMiningKey(address) external returns(bool);
+    function addVotingKey(address, address) external returns(bool);
+    function addPayoutKey(address, address) external returns(bool);
+    function createKeys(address, address, address) external;
+    function initiateKeys(address) external;
+    function migrateInitialKey(address) external;
+    function migrateMiningKey(address) external;
+    function removeMiningKey(address) external returns(bool);
+    function removeVotingKey(address) external returns(bool);
+    function removePayoutKey(address) external returns(bool);
+    function swapMiningKey(address, address) external returns(bool);
+    function swapVotingKey(address, address) external returns(bool);
+    function swapPayoutKey(address, address) external returns(bool);
+    function checkIfMiningExisted(address, address) external view returns(bool);
+    function initialKeysCount() external view returns(uint256);
+    function isMiningActive(address) external view returns(bool);
+    function isVotingActive(address) external view returns(bool);
+    function isPayoutActive(address) external view returns(bool);
+    function hasMiningKeyBeenRemoved(address) external view returns(bool);
+    function getVotingByMining(address) external view returns(address);
+    function getPayoutByMining(address) external view returns(address);
+    function getTime() external view returns(uint256);
+    function getMiningKeyHistory(address) external view returns(address);
+    function getMiningKeyByVoting(address) external view returns(address);
+    function getInitialKeyStatus(address) external view returns(uint256);
+    function masterOfCeremony() external view returns(address);
+    function maxOldMiningKeysDeepCheck() external pure returns(uint256);
+    function miningKeyByPayout(address) external view returns(address);
+    function miningKeyByVoting(address) external view returns(address);
+}
+
+
+interface IKeysManagerPrev {
+    function getInitialKey(address) external view returns(uint8);
+}
+interface IProxyStorage {
+    function initializeAddresses(
+        address, address, address, address, address, address, address, address
+    ) external;
+
+    function setContractAddress(uint256, address) external returns(bool);
+    function getBallotsStorage() external view returns(address);
+    function getKeysManager() external view returns(address);
+    function getPoaConsensus() external view returns(address);
+    function getValidatorMetadata() external view returns(address);
+    function getVotingToChangeKeys() external view returns(address);
+    function getVotingToChangeMinThreshold() external view returns(address);
+}
+
+
+/**
+ * @title EternalStorage
+ * @dev This contract holds all the necessary state variables to carry out the storage of any contract
+ * and to support the upgrade functionality.
+ */
+contract EternalStorage {
+
+    // Version number of the current implementation
+    uint256 internal _version;
+
+    // Address of the current implementation
+    address internal _implementation;
+
+    // Storage mappings
+    mapping(bytes32 => uint256) internal uintStorage;
+    mapping(bytes32 => string) internal stringStorage;
+    mapping(bytes32 => address) internal addressStorage;
+    mapping(bytes32 => bytes) internal bytesStorage;
+    mapping(bytes32 => bool) internal boolStorage;
+    mapping(bytes32 => int256) internal intStorage;
+    mapping(bytes32 => bytes32) internal bytes32Storage;
+
+    mapping(bytes32 => uint256[]) internal uintArrayStorage;
+    mapping(bytes32 => string[]) internal stringArrayStorage;
+    mapping(bytes32 => address[]) internal addressArrayStorage;
+    //mapping(bytes32 => bytes[]) internal bytesArrayStorage;
+    mapping(bytes32 => bool[]) internal boolArrayStorage;
+    mapping(bytes32 => int256[]) internal intArrayStorage;
+    mapping(bytes32 => bytes32[]) internal bytes32ArrayStorage;
+
+}
+
+library SafeMath {
+    function mul(uint256 a, uint256 b) internal pure returns(uint256) {
+        if (a == 0) {
+            return 0;
+        }
+        uint256 c = a * b;
+        assert(c / a == b);
+        return c;
+    }
+
+    function div(uint256 a, uint256 b) internal pure returns(uint256) {
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
+        uint256 c = a / b;
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
+        return c;
+    }
+
+    function sub(uint256 a, uint256 b) internal pure returns(uint256) {
+        assert(b <= a);
+        return a - b;
+    }
+
+    function add(uint256 a, uint256 b) internal pure returns(uint256) {
+        uint256 c = a + b;
+        assert(c >= a);
+        return c;
+    }
+}
 
 
 contract RewardByBlock is EternalStorage, IRewardByBlock {
@@ -23,8 +134,8 @@ contract RewardByBlock is EternalStorage, IRewardByBlock {
 
     // solhint-disable const-name-snakecase
     // These values must be changed before deploy
-    uint256 public constant blockRewardAmount = 1 ether; 
-    uint256 public constant emissionFundsAmount = 1 ether;
+    uint256 public constant blockRewardAmount = 0 ether;
+    uint256 public constant emissionFundsAmount = 0 ether;
     address public constant emissionFunds = 0x0000000000000000000000000000000000000000;
     uint256 public constant bridgesAllowedLength = 3;
     // solhint-enable const-name-snakecase
@@ -86,7 +197,7 @@ contract RewardByBlock is EternalStorage, IRewardByBlock {
         rewards[1] = emissionFundsAmount;
 
         uint256 i;
-        
+
         for (i = 0; i < extraLength; i++) {
             address extraAddress = extraReceiverByIndex(i);
             uint256 extraAmount = extraReceiverAmount(extraAddress);
@@ -112,14 +223,14 @@ contract RewardByBlock is EternalStorage, IRewardByBlock {
         _clearExtraReceivers();
 
         emit Rewarded(receivers, rewards);
-    
+
         return (receivers, rewards);
     }
 
     function bridgesAllowed() public pure returns(address[bridgesAllowedLength]) {
         // These values must be changed before deploy
         return([
-            address(0x0000000000000000000000000000000000000000),
+            address(0x63CBf84596d0Dc13fCE1d8FA4470dc208390998a),
             address(0x0000000000000000000000000000000000000000),
             address(0x0000000000000000000000000000000000000000)
         ]);
@@ -212,7 +323,7 @@ contract RewardByBlock is EternalStorage, IRewardByBlock {
 
     function _isBridgeContract(address _addr) private pure returns(bool) {
         address[bridgesAllowedLength] memory bridges = bridgesAllowed();
-        
+
         for (uint256 i = 0; i < bridges.length; i++) {
             if (_addr == bridges[i]) {
                 return true;
