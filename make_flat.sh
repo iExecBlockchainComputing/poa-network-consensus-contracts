@@ -14,3 +14,4 @@ rm -rf flat/*
 ./node_modules/.bin/poa-solidity-flattener contracts/RewardByTime.sol ./flat
 ./node_modules/.bin/poa-solidity-flattener contracts/EmissionFunds.sol ./flat
 ./node_modules/.bin/poa-solidity-flattener contracts/VotingToManageEmissionFunds.sol ./flat
+./node_modules/.bin/poa-solidity-flattener contracts/ACL/ACL.sol ./flat
