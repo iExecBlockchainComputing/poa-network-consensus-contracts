@@ -84,10 +84,6 @@ contract ACL {
         _setPermission(account,CALL_MASK);
     }
 
-    function setPermissionCreate(address account) public onlyOwner {
-        _setPermission(account,CREATE_MASK);
-    }
-
     function setPermissionPrivate(address account) public onlyOwner {
         _setPermission(account,PRIVATE_MASK);
     }
