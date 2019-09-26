@@ -38,7 +38,7 @@ module.exports = function(deployer, network, accounts) {
     let rewardByBlock, rewardByBlockImplAddress;
     let acl, aclAddress;
 
-    const minBallotDuration = demoMode ? 0 : 172800;
+    const minBallotDuration = demoMode ? 0 : 3600;
 
     deployer.then(async function() {
       if (!!process.env.DEPLOY_POA === true) {
