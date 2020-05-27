@@ -13,6 +13,7 @@ const VotingToManageEmissionFunds = artifacts.require("./VotingToManageEmissionF
 const EmissionFunds = artifacts.require("./EmissionFunds");
 const EternalStorageProxy = artifacts.require("./eternal-storage/EternalStorageProxy.sol");
 const Web3 = require('web3')
+const Wallet = require('ethereumjs-wallet')
 
 const getWeb3Latest = () => {
  const web3Latest = new Web3(web3.currentProvider)
@@ -213,6 +214,14 @@ module.exports = function(deployer, network, accounts) {
         };
 
         fs.writeFileSync('./contracts.json', JSON.stringify(contracts, null, 2));
+      }
+
+      if (!!process.env.FAKE_CEREMONY === true) {
+        let initialKey = Wallet.generate();
+        console.log(initialKey.getAddressString());
+        let final = await keysManager.initiateKeys.call(initialKey.getAddressString());
+        fs.writeFileSync('./initialKey.json', initialKey.toV3String("ceremony"));
+        fs.writeFileSync('./initialKey.private', initialKey.getPrivateKeyString());
       }
 
       console.log(
