@@ -10,3 +10,6 @@ coverage.json
 contracts.json
 initialKey.json
 initialKey.private
+miningKey.json
+payoutKey.json
+votingKey.json
