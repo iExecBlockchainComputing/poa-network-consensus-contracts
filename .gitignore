@@ -8,3 +8,6 @@ scTopics
 .DS_Store
 coverage.json
 contracts.json
+fakeCeremony.js
+initialKey.json
+initialKey.private
