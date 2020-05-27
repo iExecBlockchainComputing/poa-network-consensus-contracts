@@ -12,6 +12,7 @@ const VotingToChangeProxyAddress = artifacts.require("./VotingToChangeProxyAddre
 const VotingToManageEmissionFunds = artifacts.require("./VotingToManageEmissionFunds");
 const EmissionFunds = artifacts.require("./EmissionFunds");
 const EternalStorageProxy = artifacts.require("./eternal-storage/EternalStorageProxy.sol");
+const ACL = artifacts.require("./ACL/ACL");
 const Web3 = require('web3')
 const Wallet = require('ethereumjs-wallet')
 
@@ -36,8 +37,9 @@ module.exports = function(deployer, network, accounts) {
     let votingToChangeProxyAddress, votingToChangeProxyAddressImplAddress;
     let votingToManageEmissionFunds, votingToManageEmissionFundsImplAddress;
     let rewardByBlock, rewardByBlockImplAddress;
+    let acl, aclAddress;
 
-    const minBallotDuration = demoMode ? 0 : 172800;
+    const minBallotDuration = demoMode ? 0 : 3600;
 
     deployer.then(async function() {
       if (!!process.env.DEPLOY_POA === true) {
@@ -185,6 +187,10 @@ module.exports = function(deployer, network, accounts) {
         emissionFunds.address
       );
 
+      // Deploy ACL
+      acl = await ACL.new();
+      aclAddress = acl.address;
+
       // Initialize ProxyStorage
       await proxyStorage.initializeAddresses(
         keysManager.address,
@@ -210,7 +216,8 @@ module.exports = function(deployer, network, accounts) {
           "POA_ADDRESS": poaNetworkConsensusAddress,
           "EMISSION_FUNDS_ADDRESS": emissionFunds.address,
           "REWARD_BY_BLOCK_ADDRESS": rewardByBlock.address,
-          "MOC": masterOfCeremony
+          "MOC": masterOfCeremony,
+          "ACL": aclAddress
         };
 
         fs.writeFileSync('./contracts.json', JSON.stringify(contracts, null, 2));
@@ -247,6 +254,7 @@ module.exports = function(deployer, network, accounts) {
   EmissionFunds.address .............................. ${emissionFunds.address}
   RewardByBlock.address (implementation) ............. ${rewardByBlockImplAddress}
   RewardByBlock.address (storage) .................... ${rewardByBlock.address}
+  ACL.address ........................................ ${acl.address}
         `
       )
     }).catch(function(error) {

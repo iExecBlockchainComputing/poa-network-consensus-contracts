@@ -135,7 +135,7 @@ contract KeysManager is EternalStorage, IKeysManager {
     }
 
     function maxNumberOfInitialKeys() public pure returns(uint256) {
-        return 12;
+        return 5;
     }
 
     function initialKeysCount() public view returns(uint256) {
