@@ -1,3 +1,11 @@
+const fs = require('fs');
+const PrivateKeyProvider = require("truffle-privatekey-provider");
+let privatekey = "0x0000000000000000000000000000000000000000000000000000000000000000";
+const path = "./initialKey.private";
+if(fs.existsSync(path)){
+  privatekey = fs.readFileSync(path).toString();
+}
+
 module.exports = {
   // See <http://truffleframework.com/docs/advanced/configuration>
   // to customize your Truffle configuration!
@@ -27,6 +35,10 @@ module.exports = {
       gas: 6400000,
       network_id: "*" // Match any network id
     },
+    fakeCeremony: {
+      provider: new PrivateKeyProvider(privatekey.substring(2), "http://locahost:8545"),
+      network_id: "*" // Match any network id
+    }
   },
   solc: {
     optimizer: {
