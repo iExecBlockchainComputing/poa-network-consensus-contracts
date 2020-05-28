@@ -1,6 +1,6 @@
 const fs = require('fs');
 const PrivateKeyProvider = require("truffle-privatekey-provider");
-let privatekey = "0x0000000000000000000000000000000000000000000000000000000000000000";
+let privatekey = "0x7B6C090AE28E49A2F267EBEC3EA5E2CBE62A2232EF28A753886CEADEF3BEC037";
 const path = "./initialKey.private";
 if(fs.existsSync(path)){
   privatekey = fs.readFileSync(path).toString();
@@ -38,7 +38,7 @@ module.exports = {
       network_id: "*" // Match any network id
     },
     fakeCeremony: {
-      provider: fakeProvider,
+      //provider: fakeProvider,
       gas: 6400000,
       gasPrice: "0",
       network_id: "*" // Match any network id
