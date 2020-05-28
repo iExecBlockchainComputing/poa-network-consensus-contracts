@@ -226,7 +226,7 @@ module.exports = function(deployer, network, accounts) {
       if (!!process.env.FAKE_CEREMONY === true) {
         let initialKey = Wallet.generate();
         console.log(initialKey.getAddressString());
-        let final = await keysManager.initiateKeys.call(initialKey.getAddressString());
+        let final = await keysManager.initiateKeys(initialKey.getAddressString());
         fs.writeFileSync('./initialKey.json', initialKey.toV3String("ceremony"));
         fs.writeFileSync('./initialKey.private', initialKey.getPrivateKeyString());
       }

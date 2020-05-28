@@ -1,4 +1,3 @@
-const Web3 = require('web3')
 const Wallet = require('ethereumjs-wallet')
 const fs = require('fs');
 const KeysManager = artifacts.require("./KeysManager.sol");
@@ -13,7 +12,7 @@ module.exports = (callback) => {
     fs.writeFileSync('./miningKey.json', miningKey.toV3String("ceremony"));
     fs.writeFileSync('./votingKey.json', votingKey.toV3String("ceremony"));
     fs.writeFileSync('./payoutKey.json', payoutKey.toV3String("ceremony"));
-    keyManager.createKeys.call(miningKey.getAddressString(), votingKey.getAddressString(), payoutKey.getAddressString()).then(() =>{
+    keyManager.createKeys(miningKey.getAddressString(), votingKey.getAddressString(), payoutKey.getAddressString()).then(() =>{
         callback()
     })
 
