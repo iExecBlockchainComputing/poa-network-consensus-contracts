@@ -38,7 +38,7 @@ module.exports = {
       network_id: "*" // Match any network id
     },
     fakeCeremony: {
-      //provider: fakeProvider,
+      provider: fakeProvider,
       gas: 6400000,
       gasPrice: "0",
       network_id: "*" // Match any network id
