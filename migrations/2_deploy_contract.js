@@ -26,6 +26,7 @@ module.exports = function(deployer, network, accounts) {
     let masterOfCeremony = process.env.MASTER_OF_CEREMONY;
     let poaNetworkConsensusAddress = process.env.POA_NETWORK_CONSENSUS_ADDRESS;
     let previousKeysManager = process.env.OLD_KEYSMANAGER || "0x0000000000000000000000000000000000000000";
+    let isFakeCeremony = !!process.env.FAKE_CEREMONY;
     let demoMode = !!process.env.DEMO === true;
     let poaNetworkConsensus, emissionFunds;
     let proxyStorage, proxyStorageImplAddress;
@@ -159,6 +160,9 @@ module.exports = function(deployer, network, accounts) {
       const contractsFolder = 'contracts/';
       let rewardByBlockCode = fs.readFileSync(`${contractsFolder}RewardByBlock.sol`).toString();
       rewardByBlockCode = rewardByBlockCode.replace('emissionFunds = 0x0000000000000000000000000000000000000000', `emissionFunds = ${emissionFunds.address}`);
+      
+
+
       const rewardByBlockCompiled = await compileContract(contractsFolder, 'RewardByBlock', rewardByBlockCode);
       const rewardByBlockBytecode = `0x${rewardByBlockCompiled.bytecode}`;
       const rewardByBlockGasEstimate = web3.eth.estimateGas({data: rewardByBlockBytecode});
@@ -223,10 +227,10 @@ module.exports = function(deployer, network, accounts) {
         fs.writeFileSync('./contracts.json', JSON.stringify(contracts, null, 2));
       }
 
-      if (!!process.env.FAKE_CEREMONY === true) {
+      if (isFakeCeremony === true) {
         let initialKey = Wallet.generate();
         console.log(initialKey.getAddressString());
-        let final = await keysManager.initiateKeys(initialKey.getAddressString());
+        await keysManager.initiateKeys(initialKey.getAddressString());
         fs.writeFileSync('./initialKey.json', initialKey.toV3String("ceremony"));
         fs.writeFileSync('./initialKey.private', initialKey.getPrivateKeyString());
       }
