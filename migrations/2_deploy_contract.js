@@ -26,8 +26,9 @@ module.exports = function(deployer, network, accounts) {
     let masterOfCeremony = process.env.MASTER_OF_CEREMONY;
     let poaNetworkConsensusAddress = process.env.POA_NETWORK_CONSENSUS_ADDRESS;
     let previousKeysManager = process.env.OLD_KEYSMANAGER || "0x0000000000000000000000000000000000000000";
-    let isFakeCeremony = !!process.env.FAKE_CEREMONY;
+    let isFakeCeremony = !!process.env.FAKE_CEREMONY === true;
     let demoMode = !!process.env.DEMO === true;
+    let isBridgeDeployed = !!process.env.BRIDGE_ADDRESS === true;
     let poaNetworkConsensus, emissionFunds;
     let proxyStorage, proxyStorageImplAddress;
     let keysManager, keysManagerImplAddress;
@@ -161,7 +162,9 @@ module.exports = function(deployer, network, accounts) {
       let rewardByBlockCode = fs.readFileSync(`${contractsFolder}RewardByBlock.sol`).toString();
       rewardByBlockCode = rewardByBlockCode.replace('emissionFunds = 0x0000000000000000000000000000000000000000', `emissionFunds = ${emissionFunds.address}`);
       
-
+      if (isBridgeDeployed){
+        rewardByBlockCode = rewardByBlockCode.replace("0x9900000000000000000000000000000000000000", process.env.BRIDGE_ADDRESS);
+      }
 
       const rewardByBlockCompiled = await compileContract(contractsFolder, 'RewardByBlock', rewardByBlockCode);
       const rewardByBlockBytecode = `0x${rewardByBlockCompiled.bytecode}`;

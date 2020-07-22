@@ -119,9 +119,9 @@ contract RewardByBlock is EternalStorage, IRewardByBlock {
     function bridgesAllowed() public pure returns(address[bridgesAllowedLength]) {
         // These values must be changed before deploy
         return([
-            address(0x0000000000000000000000000000000000000000),
-            address(0x0000000000000000000000000000000000000000),
-            address(0x0000000000000000000000000000000000000000)
+            address(0x9900000000000000000000000000000000000000),
+            address(0x8800000000000000000000000000000000000000),
+            address(0x7700000000000000000000000000000000000000)
         ]);
     }
 
