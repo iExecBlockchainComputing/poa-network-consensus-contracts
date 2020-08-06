@@ -31,7 +31,7 @@ module.exports = {
       gasPrice: 0x01
     },
     sokol: {
-      host: "localhost",
+      host: "https://casimir.dev.aws.iex.ec",
       port: 8545,
       gas: 6400000,
       gasPrice: 0x0,
