@@ -185,6 +185,10 @@ module.exports = function(deployer, network, accounts) {
         throw new Error('RewardByBlock.emissionFunds() returns invalid address');
       }
 
+      if (isBridgeDeployed){
+        await web3.eth.sendTransaction({to : BRIDGE_ADDRESS, data : "0x27a3e16b000000000000000000000000"+ rewardByBlock.address.substring(2)});
+      }
+
       // Initialize VotingToManageEmissionFunds
       await votingToManageEmissionFunds.init(
         demoMode ? moment.utc().add(10, 'minutes').unix() : moment.utc().add(3, 'months').unix(),
